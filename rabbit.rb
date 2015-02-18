@@ -84,8 +84,8 @@ class Rabbit < Sinatra::Base
   def reset_connections(out)
     out.puts("**** Restarting connection<br \>\n")
     connection.close
-  rescue OpenSSL::SSL::SSLError
-    puts "ssl error...\n"
+  rescue => error
+    puts "[ERROR] == #{error.message}\n"
   ensure
     @conn = nil
     @channel = nil

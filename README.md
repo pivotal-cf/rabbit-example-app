@@ -31,3 +31,12 @@ To read messages from the queue:
   http://your.app.url/read
 ```
 
+License
+=======
+
+Released under the Apache 2.0 license
+
+(c) 2015, Pivotal Software
+
+
+

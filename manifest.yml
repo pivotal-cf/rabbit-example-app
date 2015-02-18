@@ -1,0 +1,4 @@
+---
+applications:
+  - name: test-app
+    command: puma

@@ -25,11 +25,12 @@ class Rabbit < Sinatra::Base
   end
 
   def write_loop(out)
+    out.puts "in the write loop"
     connect!(out)
     while true
       msg = DateTime.now.to_s
       queue.publish(msg, persistent: true)
-      out.puts(" [x] Sent #{msg}<br />\n")
+      puts_success(out," [x] Sent #{msg}")
       out.flush
       sleep 2
     end
@@ -39,10 +40,11 @@ class Rabbit < Sinatra::Base
   end
 
   def read_loop(out)
+    out.puts "in the read loop"
     connect!(out)
     queue.subscribe(block: true, manual_ack: true) do |delivery_info, _, body|
       channel.ack(delivery_info.delivery_tag)
-      out.puts(" [x] Received: #{body}<br />\n")
+      puts_success(out," [x] Received: #{body}")
       out.flush
     end
   rescue
@@ -68,8 +70,12 @@ class Rabbit < Sinatra::Base
   end
 
   def connect!(out)
-    @sampled_uri = amqp_credentials["uris"].sample
-    out.puts("Starting connection (#{@sampled_uri})<br />\n")
+    out.puts "hello!"
+    # @sampled_uri = amqp_credentials["uris"].sample || amqp_credentials["uri"]
+    @sampled_uri = amqp_credentials["uri"]
+    out.puts @sampled_uri
+    
+    puts_connection(out,"Starting connection (#{@sampled_uri})")
     connection.start
   end
 
@@ -82,10 +88,10 @@ class Rabbit < Sinatra::Base
   end
 
   def reset_connections(out)
-    out.puts("**** Restarting connection<br \>\n")
+    puts_warning(out,"**** Restarting connection")
     connection.close
   rescue => error
-    puts "[ERROR] == #{error.message}\n"
+    puts_error(out,"[ERROR] == #{error.message}")
   ensure
     @conn = nil
     @channel = nil
@@ -97,5 +103,33 @@ class Rabbit < Sinatra::Base
     vcap_services["p-rabbitmq"].first["credentials"]["protocols"]["amqp+ssl"] ||
       vcap_services["p-rabbitmq"].first["credentials"]["protocols"]["amqp"]
   end
+
+  def puts_success(out,msg)
+    out.puts "#{msg} <br />\n"
+  end
+
+  def puts_error(out,msg)
+    out.puts "<font color = 'red'> #{msg} </font> <br />\n"
+  end
+
+  def puts_warning(out,msg)
+    out.puts "<font color = 'orange'> #{msg} </font> <br />\n"
+  end
+
+  def puts_connection(out,msg)
+    case amqp_credentials[uris].index(@sampled_uri)
+      when 0
+        html = "<b><font color = 'DarkMagenta'> #{msg} </font></b> <br />\n"
+      when 1
+        html = "<b><font color = 'DarkSalmon'> #{msg} </font></b> <br />\n"
+      when 2
+        html = "<b><font color = 'DarkViolet'> #{msg} </font></b> <br />\n"
+      else
+        html = "#{msg} <br />\n"
+    end
+    out.puts "msg"
+    out.puts html
+  end
+
 
 end

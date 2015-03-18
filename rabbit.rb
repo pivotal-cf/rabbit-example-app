@@ -44,7 +44,6 @@ class Rabbit < Sinatra::Base
       channel.ack(delivery_info.delivery_tag)
       out.puts(" [x] Received: #{body}<br />\n")
       out.flush
-      sleep 0.8
     end
   rescue
     reset_connections(out)
@@ -61,7 +60,7 @@ class Rabbit < Sinatra::Base
 
   def connection
     @conn ||= Bunny.new(
-      amqp_credentials["uri"],
+      @sampled_uri,
       :tls_cert            => "./tls/client_certificate.pem",
       :tls_key             => "./tls/client_key.pem",
       :tls_ca_certificates => ["./tls/ca_certificate.pem"],
@@ -69,7 +68,8 @@ class Rabbit < Sinatra::Base
   end
 
   def connect!(out)
-    out.puts("Starting connection (#{amqp_credentials["uri"]})<br />\n")
+    @sampled_uri = amqp_credentials["uris"].sample
+    out.puts("Starting connection (#{@sampled_uri})<br />\n")
     connection.start
   end
 

@@ -25,12 +25,11 @@ class Rabbit < Sinatra::Base
   end
 
   def write_loop(out)
-    out.puts "in the write loop"
     connect!(out)
     while true
       msg = DateTime.now.to_s
       queue.publish(msg, persistent: true)
-      puts_success(out," [x] Sent #{msg}")
+      puts_success(out,"[x] Sent #{msg}")
       out.flush
       sleep 2
     end
@@ -40,11 +39,10 @@ class Rabbit < Sinatra::Base
   end
 
   def read_loop(out)
-    out.puts "in the read loop"
     connect!(out)
     queue.subscribe(block: true, manual_ack: true) do |delivery_info, _, body|
       channel.ack(delivery_info.delivery_tag)
-      puts_success(out," [x] Received: #{body}")
+      puts_success(out,"[x] Received: #{body}")
       out.flush
     end
   rescue
@@ -70,13 +68,11 @@ class Rabbit < Sinatra::Base
   end
 
   def connect!(out)
-    out.puts "hello!"
-    # @sampled_uri = amqp_credentials["uris"].sample || amqp_credentials["uri"]
-    @sampled_uri = amqp_credentials["uri"]
-    out.puts @sampled_uri
+    @sampled_uri = amqp_credentials["uris"].sample || amqp_credentials["uri"]
     
-    puts_connection(out,"Starting connection (#{@sampled_uri})")
     connection.start
+    puts_connection(out,"Starting connection (#{@sampled_uri})")
+
   end
 
   def vcap_services
@@ -88,10 +84,10 @@ class Rabbit < Sinatra::Base
   end
 
   def reset_connections(out)
-    puts_warning(out,"**** Restarting connection")
+    puts_warning(out,"**** Restarting connection ****")
     connection.close
   rescue => error
-    puts_error(out,"[ERROR] == #{error.message}")
+    puts_error(out,"[ERROR] #{error.message}")
   ensure
     @conn = nil
     @channel = nil
@@ -117,17 +113,18 @@ class Rabbit < Sinatra::Base
   end
 
   def puts_connection(out,msg)
-    case amqp_credentials[uris].index(@sampled_uri)
+    index = amqp_credentials["uris"].index(@sampled_uri) || 0
+
+    case index
       when 0
         html = "<b><font color = 'DarkMagenta'> #{msg} </font></b> <br />\n"
       when 1
-        html = "<b><font color = 'DarkSalmon'> #{msg} </font></b> <br />\n"
+        html = "<b><font color = 'DarkSalmon'>  #{msg} </font></b> <br />\n"
       when 2
-        html = "<b><font color = 'DarkViolet'> #{msg} </font></b> <br />\n"
+        html = "<b><font color = 'DarkViolet'>  #{msg} </font></b> <br />\n"
       else
-        html = "#{msg} <br />\n"
+        html = "<b> #{msg} </b><br />\n"
     end
-    out.puts "msg"
     out.puts html
   end
 

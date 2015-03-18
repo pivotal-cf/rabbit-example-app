@@ -69,9 +69,10 @@ class Rabbit < Sinatra::Base
 
   def connect!(out)
     @sampled_uri = amqp_credentials["uris"].sample || amqp_credentials["uri"]
-    
+    @sampled_host = amqp_credentials["hosts"].sample || amqp_credentials["host"]
+
     connection.start
-    puts_connection(out,"Starting connection (#{@sampled_uri})")
+    puts_connection(out,"Starting connection to (#{@sampled_host})")
 
   end
 
@@ -84,7 +85,7 @@ class Rabbit < Sinatra::Base
   end
 
   def reset_connections(out)
-    puts_warning(out,"**** Restarting connection ****")
+    puts_warning(out,"[WARNING] Restarting connection")
     connection.close
   rescue => error
     puts_error(out,"[ERROR] #{error.message}")

@@ -1,4 +1,4 @@
 require 'bundler/setup'
-require "./rabbit"
+require_relative 'lib/server'
 
-Rabbit.run!
+RabbitExample::Server.run!

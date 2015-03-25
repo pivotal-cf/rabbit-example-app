@@ -1,4 +1,4 @@
 ---
 applications:
-  - name: test-app
-    command: puma
+- name: test-app
+  command: thin -R config.ru start

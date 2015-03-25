@@ -3,9 +3,6 @@ require 'sinatra-websocket'
 require_relative 'consumer'
 require_relative 'producer'
 
-# 1. Find out how to set the timeout shorter
-# 1. How can we stop the read subscribe
-
 module RabbitExample
   class Server < Sinatra::Base
     configure do

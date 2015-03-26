@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra-websocket'
+require 'tilt/erb'
 require_relative 'consumer'
 require_relative 'producer'
 
@@ -12,13 +13,17 @@ module RabbitExample
       enable :inline_templates
     end
 
+    get '/' do
+      erb(:index)
+    end
+
     get '/write' do
       start_websocket do |ws|
         producer = Producer.new(ws)
         ws.onclose { producer.stop! }
         ws.onopen do
-          producer.connect!
-          producer.write until ws.state == :closed
+          producer.start!
+          producer.write until producer.closed?
         end
       end
     end
@@ -28,20 +33,20 @@ module RabbitExample
         consumer = Consumer.new(ws)
         ws.onclose { consumer.stop! }
         ws.onopen do
-          consumer.connect!
+          consumer.start!
           consumer.subscribe
         end
       end
     end
 
     def start_websocket(&block)
-      request.websocket? ? request.websocket(&block) : erb(:index)
+      request.websocket? ? request.websocket(&block) : erb(:read_write)
     end
   end
 end
 
 __END__
-@@ index
+@@ layout
 <html>
 <head>
   <meta charset="utf-8">
@@ -50,14 +55,30 @@ __END__
   <title>Simple RabbitMQ Example</title>
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="padding-top: 70px;">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <ul class="nav navbar-nav">
+        <li class="<%= 'active' if request.path_info == '/write' %>"><a href="/write">Write</a></li>
+        <li class="<%= 'active' if request.path_info == '/read' %>"><a href="/read">Read</a></li>
+      </ul>
+    </div>
+  </nav>
   <div class="container">
     <div class="page-header">
-      <h1>Simple RabbitMQ Example <small><%= request.path_info[1..-1] %></small></h1>
+      <h1>Simple RabbitMQ Example <small><%= request.path_info[1..-1].capitalize %></small></h1>
     </div>
-    <ul id="msgs"></ul>
+
+    <%= yield %>
   </div>
 </body>
+</html>
+
+@@ index
+<p> Please choose a read or write action.</p>
+
+@@ read_write
+<ul id="msgs"></ul>
 
 <script type="text/javascript">
   window.onload = function() {
@@ -70,4 +91,3 @@ __END__
     };
   }
 </script>
-</html>

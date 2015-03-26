@@ -14,8 +14,8 @@ module RabbitExample
       channel.ack delivery_info.delivery_tag
       puts_success "Received: #{body}"
     rescue => e
-      puts_warn "Read failed: #{e.message}"
-      close!
+      puts_warning "Read failed: #{e.message}"
+      restart!
     end
   end
 end

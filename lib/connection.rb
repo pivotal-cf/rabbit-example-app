@@ -7,24 +7,45 @@ module RabbitExample
       @ws = ws
     end
 
-    def connect!
+    def start!
       @sampled_uri = amqp_credentials['uris'].sample || amqp_credentials['uri']
 
       connection.start
-      index = amqp_credentials['uris'].index(@sampled_uri) || 0
-      color = %w(DarkMagenta DarkSalmon DarkViolet)[index] || 'Black'
-      ws_puts "<b><font color='#{color}'>Starting connection to (#{@sampled_uri})</font></b><br/>\n"
+      index = amqp_credentials['uris'].index(@sampled_uri)
+      ws_puts "<b><font color='DarkMagenta'>Connected to #{@sampled_uri} (index #{index})</font></b><br/>\n"
+    rescue => e
+      puts_error "[ERROR] Connection #{@sampled_uri} failed to start: #{e.message}."
+      clear_connection_state
+      unless closed?
+        sleep 2
+        retry
+      end
     end
 
     def stop!
       connection.stop
+      clear_connection_state
     rescue => e
-      puts_error "[ERROR] Connection failed to stop: #{e.message}."
+      puts_error "[ERROR] Connection #{@sampled_uri} failed to stop: #{e.message}."
+    end
+
+    def restart!
+      puts_warning 'Trying to reconnect'
+      stop!
+      start!
+    end
+
+    def closed?
+      ws.state == :closed
     end
 
     private
 
     attr_reader :ws
+
+    def clear_connection_state
+      @connection = @channel = @queue = nil
+    end
 
     def queue
       @queue ||= channel.queue(queue_name, durable: true)
@@ -41,8 +62,6 @@ module RabbitExample
         tls_key: './tls/client_key.pem',
         tls_ca_certificates: %w(./tls/ca_certificate.pem),
         verify_peer: false)
-    rescue Bunny::TCPConnectionFailed => e
-      puts_error "[ERROR] Connection to #{@sampled_uri} failed: #{e.message}."
     end
 
     def vcap_services

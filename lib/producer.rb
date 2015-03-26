@@ -8,8 +8,8 @@ module RabbitExample
       puts_success "Sent #{msg}"
       sleep sleep_time
     rescue => e
-      puts_warn "Write failed: #{e.message}"
-      close!
+      puts_warning "Write failed: #{e.message}"
+      restart!
     end
 
     private

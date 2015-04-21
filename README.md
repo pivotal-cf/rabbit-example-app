@@ -30,9 +30,9 @@ Demonstration
 * Open the URLs to read and write in separate browser tabs, side by side. 
 * You will see messages being sent & received
 * Identify the HAProxy that the writing app is connected to from the IP in the bold color coded URI string
-* Using BOSH you can `bosh stop job rabbitmq-haproxy-partition-default_az_guid <index>`
+* Using BOSH you can `bosh stop rabbitmq-haproxy-partition-default_az_guid <index>`
 * Observe the writing application fail and then automatically reconnect and continue sending messages
-* You could also `bosh stop job `rabbitmq-server-partition-default_az_guid <index>` to simulate a RabbitMQ node failing
+* You could also `bosh stop rabbitmq-server-partition-default_az_guid <index>` to simulate a RabbitMQ node failing
 
 License
 =======

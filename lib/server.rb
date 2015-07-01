@@ -82,7 +82,7 @@ __END__
 
 <script type="text/javascript">
   window.onload = function() {
-    var ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
+    var ws = new WebSocket('wss://' + window.location.host + window.location.pathname);
     ws.onmessage = function(m) {
       var el = document.getElementById('msgs'),
         node = document.createElement('LI');

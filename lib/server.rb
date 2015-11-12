@@ -3,6 +3,7 @@ require 'sinatra-websocket'
 require 'tilt/erb'
 require_relative 'consumer'
 require_relative 'producer'
+require_relative 'store'
 
 module RabbitExample
   class Server < Sinatra::Base
@@ -37,6 +38,17 @@ module RabbitExample
           consumer.subscribe
         end
       end
+    end
+
+    get '/store' do
+      store = Store.new
+      store.read
+    end
+
+    post '/store' do
+      request.body.rewind
+      store = Store.new
+      store.write(request.body.read)
     end
 
     def start_websocket(&block)

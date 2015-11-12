@@ -15,13 +15,23 @@ Usage
 To write messages to the queue:
 
 ```
-  http://test-app.<YOUR_DOMAIN>/write
+http://test-app.<YOUR_DOMAIN>/write
 ```
 
 To read messages from the queue:
 
 ```
-  http://test-app.<YOUR_DOMAIN>/read
+http://test-app.<YOUR_DOMAIN>/read
+```
+
+While the `write` and `read` enpoints will open a websocket, the `store` endpoint
+allows to write and read single messages using HTTP POST and GET
+requests. For example:
+
+```
+curl -XPOST -d 'test' http://test-app.<YOUR-DOMAIN>/store
+
+curl -XGET http://test-app.<YOUR-DOMAIN>/store
 ```
 
 #### If you have`HAProxy allows HTTPS traffic only` enabled in CloudFoundry, then

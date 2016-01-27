@@ -53,8 +53,16 @@ module RabbitExample
     end
 
     def amqp_credentials
-      protocols = vcap_services['p-rabbitmq'].first['credentials']['protocols']
+      protocols = extract_credentials(vcap_services)['protocols']
       protocols['amqp+ssl'] || protocols['amqp']
+    end
+
+    def extract_credentials(vcap_services)
+      vcap_services.each do |service_key, service|
+        service.each do |element|
+          return element["credentials"] if element["tags"].include?("rabbitmq")
+        end
+      end
     end
   end
 end

@@ -9,6 +9,22 @@ Inside the app repository, run the following commands:
   cf restage test-app
 ```
 
+Development
+===========
+
+Install dependencies and run all the specs:
+
+```bash
+bundle
+bundle exec rspec
+```
+
+The Guard runner is provided for faster feedback from the specs:
+
+```bash
+bundle exec guard
+```
+
 Usage
 =====
 
@@ -24,14 +40,22 @@ To read messages from the queue:
 http://test-app.<YOUR_DOMAIN>/read
 ```
 
-While the `write` and `read` enpoints will open a websocket, the `store` endpoint
-allows to write and read single messages using HTTP POST and GET
+While the `write` and `read` endpoints will open a websocket, the `store` endpoint
+allows you to write and read single messages using HTTP POST and GET
 requests. For example:
 
 ```
 curl -XPOST -d 'test' http://test-app.<YOUR-DOMAIN>/store
 
 curl -XGET http://test-app.<YOUR-DOMAIN>/store
+```
+
+The `queues` endpoint allows writing and reading single messages to and from a specific queue using HTTP POST and GET requests:
+
+```bash
+curl -XPOST -d 'test' http://test-app.<YOUR-DOMAIN>/queues/<YOUR-QUEUE-NAME>
+
+curl -XGET http://test-app.<YOUR-DOMAIN>/queues/<YOUR-QUEUE-NAME>
 ```
 
 #### If you have`HAProxy allows HTTPS traffic only` enabled in CloudFoundry, then

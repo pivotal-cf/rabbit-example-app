@@ -3,6 +3,12 @@ require 'bunny'
 
 module RabbitExample
   class Store
+    attr_reader :queue_name
+
+    def initialize(queue_name = ENV['QUEUE_NAME'] || 'storeq')
+      @queue_name = queue_name
+    end
+
     def write(msg)
       @sampled_uri = amqp_credentials['uris'].sample || amqp_credentials['uri']
       connection.start
@@ -48,10 +54,6 @@ module RabbitExample
       @vcap_services ||= JSON.parse(ENV['VCAP_SERVICES'])
     end
 
-    def queue_name
-      ENV['QUEUE_NAME'] || 'storeq'
-    end
-
     def amqp_credentials
       protocols = extract_credentials(vcap_services)['protocols']
       protocols['amqp+ssl'] || protocols['amqp']
@@ -63,7 +65,8 @@ module RabbitExample
           return element["credentials"] if element["tags"].include?("rabbitmq")
         end
       end
+
+      raise "no rabbitmq tag found!"
     end
   end
 end
-

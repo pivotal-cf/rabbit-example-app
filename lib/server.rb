@@ -29,6 +29,7 @@ module RabbitExample
       end
     end
 
+
     get '/read' do
       start_websocket do |ws|
         consumer = Consumer.new(ws)
@@ -49,6 +50,17 @@ module RabbitExample
       request.body.rewind
       store = Store.new
       store.write(request.body.read)
+    end
+
+    post '/queues/:queue_name' do
+      request.body.rewind
+      store = Store.new(params[:queue_name])
+      store.write(request.body.read)
+    end
+
+    get '/queues/:queue_name' do
+      store = Store.new(params[:queue_name])
+      store.read
     end
 
     def start_websocket(&block)

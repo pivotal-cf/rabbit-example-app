@@ -2,3 +2,4 @@
 applications:
 - name: test-app
   command: thin -R config.ru start
+  path: .

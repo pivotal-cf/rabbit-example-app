@@ -3,3 +3,5 @@ applications:
 - name: rabbit-example-app
   command: thin -R config.ru start
   path: .
+  services:
+  - rmq

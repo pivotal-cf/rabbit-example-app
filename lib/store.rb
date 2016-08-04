@@ -9,7 +9,7 @@ module RabbitExample
       queue.publish msg, persistent: true
     rescue => e
       clear_connection_state
-      "[ERROR] Store::write: #{e.message}."
+      raise StandardError.new("[ERROR] Store::write: #{e.message}.")
     end
 
     def read
@@ -18,7 +18,7 @@ module RabbitExample
       queue.pop[2]
     rescue => e
       clear_connection_state
-      "[ERROR] Store::read: #{e.message}."
+      raise StandardError.new("[ERROR] Store::read: #{e.message}.")
     end
 
     private

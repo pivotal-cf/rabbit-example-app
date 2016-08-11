@@ -83,6 +83,8 @@ module RabbitExample
           return element["credentials"] if element["tags"].include?("rabbitmq")
         end
       end
+
+      raise "no rabbitmq tag found!"
     end
 
     def puts_success(msg)

@@ -1,0 +1,6 @@
+example_id                    | status | run_time        |
+----------------------------- | ------ | --------------- |
+./spec/store_spec.rb[1:1:1]   | passed | 0.00065 seconds |
+./spec/store_spec.rb[1:2:1]   | passed | 0.00589 seconds |
+./spec/store_spec.rb[1:3:1:1] | passed | 0.00068 seconds |
+./spec/store_spec.rb[1:3:2:1] | passed | 0.0007 seconds  |

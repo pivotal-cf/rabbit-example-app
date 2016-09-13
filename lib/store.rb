@@ -16,6 +16,8 @@ module RabbitExample
     rescue => e
       clear_connection_state
       raise StandardError.new("[ERROR] Store::write: #{e.message}.")
+    ensure
+      connection.close
     end
 
     def read
@@ -25,6 +27,8 @@ module RabbitExample
     rescue => e
       clear_connection_state
       raise StandardError.new("[ERROR] Store::read: #{e.message}.")
+    ensure
+      connection.close
     end
 
     private

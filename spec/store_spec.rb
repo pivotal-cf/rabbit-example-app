@@ -1,9 +1,13 @@
 require_relative "../lib/store"
 
 RSpec.describe 'Store' do
+  subject(:store) { RabbitExample::Store.new }
+
   let(:mock_channel) { double("channel") }
   let(:env_queue_name) { nil }
   let(:env_queue_opts) { nil }
+  let(:mock_connection) { instance_double(Bunny::Session) }
+  let(:messages) { ["message"] }
 
   before(:each) do
     allow(ENV).to receive(:[]).with('VCAP_SERVICES').and_return(
@@ -32,18 +36,34 @@ RSpec.describe 'Store' do
     allow(ENV).to receive(:[]).with('QUEUE_NAME').and_return(env_queue_name)
     allow(ENV).to receive(:[]).with('QUEUE_OPTS').and_return(env_queue_opts)
 
-    mock_connection = double("connection")
     mock_queue = double("queue")
 
     allow(Bunny).to receive(:new).and_return(mock_connection)
     allow(mock_connection).to receive(:create_channel).and_return(mock_channel)
     allow(mock_connection).to receive(:start)
+    allow(mock_connection).to receive(:close)
     allow(mock_channel).to receive(:queue).and_return(mock_queue)
     allow(mock_queue).to receive(:publish)
+    allow(mock_queue).to receive(:pop).and_return(messages)
+  end
+
+  describe "#write" do
+    it "closes connection" do
+      store.write("message")
+
+      expect(mock_connection).to have_received(:close)
+    end
+  end
+
+  describe "#read" do
+    it "closes connection" do
+      store.read
+
+      expect(mock_connection).to have_received(:close)
+    end
   end
 
   context "when the queue is not set" do
-    subject(:store) { RabbitExample::Store.new }
     let(:env_queue_name) { nil }
 
     it "publishes a message to the default queue" do
@@ -54,7 +74,6 @@ RSpec.describe 'Store' do
   end
 
   context "when the queue is set as an environment variable" do
-    subject(:store) { RabbitExample::Store.new }
     let(:env_queue_name) { "env-queue" }
 
     it "publishes a message to QUEUE_NAME" do
@@ -65,7 +84,6 @@ RSpec.describe 'Store' do
   end
 
   context "when the queue options are set as an environment variable" do
-    subject(:store) { RabbitExample::Store.new }
     let(:env_queue_opts) { '{"durable":false}' }
 
     it "publishes a message to the default non-durable queue" do

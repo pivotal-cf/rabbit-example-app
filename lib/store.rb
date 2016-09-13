@@ -29,12 +29,19 @@ module RabbitExample
 
     private
 
+    def queue_options
+      JSON.parse(
+        ENV['QUEUE_OPTS'] || '{"durable":true}',
+        symbolize_names: true
+      )
+    end
+
     def clear_connection_state
       @connection = @channel = @queue = nil
     end
 
     def queue
-      @queue ||= channel.queue(queue_name, durable: true)
+      @queue ||= channel.queue(queue_name, queue_options)
     end
 
     def channel

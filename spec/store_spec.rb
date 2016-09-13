@@ -2,6 +2,8 @@ require_relative "../lib/store"
 
 RSpec.describe 'Store' do
   let(:mock_channel) { double("channel") }
+  let(:env_queue_name) { nil }
+  let(:env_queue_opts) { nil }
 
   before(:each) do
     allow(ENV).to receive(:[]).with('VCAP_SERVICES').and_return(
@@ -27,6 +29,9 @@ RSpec.describe 'Store' do
       JSON
     )
 
+    allow(ENV).to receive(:[]).with('QUEUE_NAME').and_return(env_queue_name)
+    allow(ENV).to receive(:[]).with('QUEUE_OPTS').and_return(env_queue_opts)
+
     mock_connection = double("connection")
     mock_queue = double("queue")
 
@@ -39,9 +44,7 @@ RSpec.describe 'Store' do
 
   context "when the queue is not set" do
     subject(:store) { RabbitExample::Store.new }
-    before(:each) do
-      allow(ENV).to receive(:[]).with('QUEUE_NAME').and_return(nil)
-    end
+    let(:env_queue_name) { nil }
 
     it "publishes a message to the default queue" do
       store.write("message")
@@ -52,9 +55,7 @@ RSpec.describe 'Store' do
 
   context "when the queue is set as an environment variable" do
     subject(:store) { RabbitExample::Store.new }
-    before(:each) do
-      allow(ENV).to receive(:[]).with('QUEUE_NAME').and_return("env-queue")
-    end
+    let(:env_queue_name) { "env-queue" }
 
     it "publishes a message to QUEUE_NAME" do
       store.write("message")
@@ -63,13 +64,22 @@ RSpec.describe 'Store' do
     end
   end
 
+  context "when the queue options are set as an environment variable" do
+    subject(:store) { RabbitExample::Store.new }
+    let(:env_queue_opts) { '{"durable":false}' }
+
+    it "publishes a message to the default non-durable queue" do
+      store.write("message")
+
+      expect(mock_channel).to have_received(:queue).with('storeq', durable: false)
+    end
+  end
+
   context "when the store is initialised with a queue name" do
     subject(:store) { RabbitExample::Store.new "user-queue" }
 
     context("with QUEUE_NAME set") do
-      before(:each) do
-        allow(ENV).to receive(:[]).with('QUEUE_NAME').and_return("env-queue")
-      end
+      let(:env_queue_name) { "env-queue" }
 
       it "publishes a message to the specified queue" do
         store.write("message")
@@ -79,9 +89,7 @@ RSpec.describe 'Store' do
     end
 
     context("without QUEUE_NAME") do
-      before(:each) do
-        allow(ENV).to receive(:[]).with('QUEUE_NAME').and_return(nil)
-      end
+      let(:env_queue_name) { nil }
 
       it "publishes a message to the specified queue" do
         store.write("message")

@@ -15,7 +15,7 @@ Development
 Install dependencies and run all the specs:
 
 ```bash
-bundle
+bundle --local
 bundle exec rspec
 ```
 

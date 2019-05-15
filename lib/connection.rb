@@ -51,6 +51,10 @@ module RabbitExample
       @queue ||= channel.queue(queue_name, durable: true)
     end
 
+    def exchange
+      @echange ||= channel.fanout('a.b.c')
+    end
+
     def channel
       @channel ||= connection.create_channel
     end

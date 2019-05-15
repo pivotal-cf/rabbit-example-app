@@ -4,7 +4,7 @@ module RabbitExample
   class Producer < Connection
     def write
       msg = DateTime.now.to_s
-      queue.publish msg, persistent: true
+      exchange.publish msg, persistent: true, mandatory: true
       puts_success "Sent #{msg}"
       sleep sleep_time
     rescue => e

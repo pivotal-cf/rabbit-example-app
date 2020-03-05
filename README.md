@@ -77,4 +77,4 @@ License
 
 Released under the Apache 2.0 license
 
-(c) 2015, Pivotal Software
+(c) 2015, VMware, Inc. or its affiliates

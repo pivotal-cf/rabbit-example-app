@@ -59,7 +59,7 @@ curl -XGET http://test-app.<YOUR-DOMAIN>/queues/<YOUR-QUEUE-NAME>
 ```
 
 #### If you have`HAProxy allows HTTPS traffic only` enabled in CloudFoundry, then
-- Replace http with https with http in the above mentioned URL's.
+- Replace http with https in the above mentioned URL's.
 - Ensure you have a rule on your LoadBalancer (or HAProxy), which forwards secure TCP from port 4443 to TCP on port 80.
 
 Demonstration

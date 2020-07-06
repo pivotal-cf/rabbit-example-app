@@ -61,7 +61,9 @@ module RabbitExample
         tls_cert: './tls/client_certificate.pem',
         tls_key: './tls/client_key.pem',
         tls_ca_certificates: %w(./tls/ca_certificate.pem),
-        verify_peer: false)
+        verify_peer: false,
+        password: @jwt_token
+      )
     end
 
     def vcap_services
@@ -73,11 +75,11 @@ module RabbitExample
     end
 
     def amqp_credentials
-      protocols = extract_credentials(vcap_services)['protocols']
+      protocols = extract_rabbitmq_credentials(vcap_services)['protocols']
       protocols['amqp+ssl'] || protocols['amqp']
     end
 
-    def extract_credentials(vcap_services)
+    def extract_rabbitmq_credentials(vcap_services)
       vcap_services.each do |service_key, service|
         service.each do |element|
           return element["credentials"] if element["tags"].include?("rabbitmq")
@@ -85,6 +87,20 @@ module RabbitExample
       end
 
       raise "no rabbitmq tag found!"
+    end
+
+    def uaa_credentials
+      uaa = extract_uaa_credentials(vcap_services)
+    end
+
+    def extract_uaa_credentials(vcap_services)
+      vcap_services.each do |service_key, service|
+        service.each do |element|
+          return element["credentials"] if element["label"].equal?("p-identity")
+        end
+      end
+
+      raise "no p-identity binding found!"
     end
 
     def puts_success(msg)

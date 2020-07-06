@@ -1,5 +1,6 @@
 require 'json'
 require 'bunny'
+require 'uaa'
 
 module RabbitExample
   class Connection
@@ -90,7 +91,7 @@ module RabbitExample
     end
 
     def uaa_credentials
-      uaa = extract_uaa_credentials(vcap_services)
+      @uaa_credentials = extract_uaa_credentials(vcap_services)
     end
 
     def extract_uaa_credentials(vcap_services)
@@ -101,6 +102,14 @@ module RabbitExample
       end
 
       raise "no p-identity binding found!"
+    end
+
+    def jwt_token
+      @jwt_token ||= CF::UAA::TokenIssuer.new(
+        uaa_credentials.auth_domain,
+        uaa_credentials.client_id,
+        uaa_credentials.client_secret
+      ).client_credentials_grant
     end
 
     def puts_success(msg)

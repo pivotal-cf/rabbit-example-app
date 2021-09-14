@@ -58,9 +58,8 @@ module RabbitExample
     def connection
       @connection ||= Bunny.new(
         @sampled_uri,
-        tls_cert: './tls/client_certificate.pem',
-        tls_key: './tls/client_key.pem',
-        tls_ca_certificates: %w(./tls/ca_certificate.pem),
+        tls_cert: ENV['CF_INSTANCE_CERT'],
+        tls_key: ENV['CF_INSTANCE_KEY'],
         verify_peer: false)
     end
 

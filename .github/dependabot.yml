@@ -1,0 +1,8 @@
+ersion: 2
+updates:
+- package-ecosystem: "bundler"
+  directory: "/"
+  vendor: true
+  target-branch: "master"
+  schedule:
+    interval: "daily"

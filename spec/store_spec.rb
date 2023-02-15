@@ -6,6 +6,8 @@ RSpec.describe 'Store' do
   let(:mock_channel) { double("channel") }
   let(:env_queue_name) { nil }
   let(:env_queue_opts) { nil }
+  let(:env_cf_instance_cert) { nil }
+  let(:env_cf_instance_key) { nil }
   let(:mock_connection) { instance_double(Bunny::Session) }
   let(:messages) { ["message"] }
 
@@ -35,6 +37,8 @@ RSpec.describe 'Store' do
 
     allow(ENV).to receive(:[]).with('QUEUE_NAME').and_return(env_queue_name)
     allow(ENV).to receive(:[]).with('QUEUE_OPTS').and_return(env_queue_opts)
+    allow(ENV).to receive(:[]).with('CF_INSTANCE_CERT').and_return(env_cf_instance_cert)
+    allow(ENV).to receive(:[]).with('CF_INSTANCE_KEY').and_return(env_cf_instance_key)
 
     mock_queue = double("queue")
 

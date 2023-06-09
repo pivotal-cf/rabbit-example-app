@@ -4,7 +4,7 @@ GEM
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     amq-protocol (2.3.2)
-    bunny (2.20.3)
+    bunny (2.21.0)
       amq-protocol (~> 2.3, >= 2.3.1)
       sorted_set (~> 1, >= 1.0.2)
     coderay (1.1.3)

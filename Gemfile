@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '~> 3.2.0'
+ruby File.read(File.join(File.dirname(__FILE__), '.ruby-version')).strip
 
 gem 'sinatra'
 gem 'sinatra-websocket'

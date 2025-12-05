@@ -101,4 +101,7 @@ DEPENDENCIES
   thin
 
 RUBY VERSION
-   ruby 3.2.4p170
+  ruby 3.4.7
+
+BUNDLED WITH
+  4.0.0
